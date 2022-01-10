@@ -28,94 +28,82 @@ line_finder <- function(path_target, w, thresh_min_area, thresh_thinning, win_si
       system.time({
       # Load data
       seg <- raster(paste0(path_folder,"/ras_results_",w,".tif"))
-      
-      # Exclude segments smaller than threshold
-      seg_poly <- rasterToPolygons(seg, fun=function(x){x==1}, dissolve=T)
-      seg_poly <- disaggregate(seg_poly)
-      seg_poly_min <- seg_poly[area(seg_poly) >= thresh_min_area,]
 
-      if (nrow(seg_poly_min)>0){
-        seg_min <- rasterize(seg_poly_min, seg)
-        seg_min[seg_min>1] <- 1
+      # Thinning of raster
+      seg_f1 <- focal(seg, w=matrix(1,3,3), fun=sum, na.rm=T)
+      seg_f1[seg_f1[]<thresh_thinning] <- 0
+      seg_f1[seg_f1[]>=thresh_thinning] <- 1
+
+
+      # Finding start points of lines
+      start_points <- focal(seg_f1, w=matrix(1,5,5), fun=point_finder)
+
+      # Search for lines from start points
+      coords_start <- xyFromCell(start_points, which(start_points[]==1))
+      coords_todo <- xyFromCell(seg_f1, which(seg_f1[]==1))
+      lines <- list()
+      new_line <- TRUE
+      while(length(coords_start)>2){
+        if (new_line){
+          coord_centre <- coords_start[1,]
+          line <- data.frame(x=coord_centre[1], y=coord_centre[2])
+        }
         
-
-        # Thinning of raster
-        seg_f1 <- focal(seg_min, w=matrix(1,3,3), fun=sum, na.rm=T)
-        seg_f1[seg_f1[]<thresh_thinning] <- 0
-        seg_f1[seg_f1[]>=thresh_thinning] <- 1
-
-
-        # Finding start points of lines
-        start_points <- focal(seg_f1, w=matrix(1,5,5), fun=point_finder)
-
-        # Search for lines from start points
-        coords_start <- xyFromCell(start_points, which(start_points[]==1))
-        coords_todo <- xyFromCell(seg_f1, which(seg_f1[]==1))
-        lines <- list()
-        new_line <- TRUE
-        while(length(coords_start)>2){
-          if (new_line){
-            coord_centre <- coords_start[1,]
-            line <- data.frame(x=coord_centre[1], y=coord_centre[2])
-          }
+        dis <- pointDistance(coord_centre, coords_todo, lonlat = F)
+  
+        bool_sel <- dis<=win_size
+        if (sum(bool_sel) > 1){
+          coords_sel <- coords_todo[bool_sel,]
+          coord_centre <- c(mean(coords_sel[,1]),mean(coords_sel[,2]))
+          line[nrow(line)+1,] <- coord_centre
+          coords_todo <- coords_todo[!bool_sel,]
+          new_line <- FALSE
           
-          dis <- pointDistance(coord_centre, coords_todo, lonlat = F)
-    
-          bool_sel <- dis<=win_size
-          if (sum(bool_sel) > 1){
-            coords_sel <- coords_todo[bool_sel,]
-            coord_centre <- c(mean(coords_sel[,1]),mean(coords_sel[,2]))
-            line[nrow(line)+1,] <- coord_centre
-            coords_todo <- coords_todo[!bool_sel,]
-            new_line <- FALSE
-            
-          } else {
-            if (nrow(line)>1){lines[[length(lines)+1]] <- line}
-            coords_start <- coords_start[-1,]
-            new_line <- TRUE
-          }
+        } else {
+          if (nrow(line)>1){lines[[length(lines)+1]] <- line}
+          coords_start <- coords_start[-1,]
+          new_line <- TRUE
         }
+      }
 
-        # Contine search for lines from pixels not yet used
-        new_line <- TRUE
-        while(length(coords_todo)>2){
-          if (new_line){
-            coord_centre <- coords_todo[1,]
-            line <- data.frame(x=coord_centre[1], y=coord_centre[2])
-          }
-          
-          dis <- pointDistance(coord_centre, coords_todo, lonlat = F)
-          bool_sel <- dis<=win_size
-          if (sum(bool_sel) > 1){
-            coords_sel <- coords_todo[bool_sel,]
-            coord_centre <- c(mean(coords_sel[,1]),mean(coords_sel[,2]))
-            line[nrow(line)+1,] <- coord_centre
-            coords_todo <- coords_todo[!bool_sel,]
-            new_line <- FALSE
-            
-          } else {
-            if (nrow(line)>1){lines[[length(lines)+1]] <- line}
-            coords_todo <- coords_todo[-1,]
-            new_line <- TRUE
-          }
+      # Contine search for lines from pixels not yet used
+      new_line <- TRUE
+      while(length(coords_todo)>2){
+        if (new_line){
+          coord_centre <- coords_todo[1,]
+          line <- data.frame(x=coord_centre[1], y=coord_centre[2])
         }
-
-        # Create list of lines
-        if (length(lines)>0){
-          list_lines <- list()
-          for (i in 1:length(lines)){
-            l_coords <- lines[[i]]
-            lin <- Line(l_coords)
-            lin_id <- Lines(list(lin),ID=i)
-            list_lines[[i]] <- lin_id
-          }
-          
-          # Save lines
-          sl <- SpatialLines(list_lines)
-          sldf <- SpatialLinesDataFrame(sl, data.frame(id=1:length(lines)))
-          writeOGR(sldf, dsn=path_folder, layer=paste0("lines_",w), driver = "ESRI Shapefile", overwrite_layer = T)
         
+        dis <- pointDistance(coord_centre, coords_todo, lonlat = F)
+        bool_sel <- dis<=win_size
+        if (sum(bool_sel) > 1){
+          coords_sel <- coords_todo[bool_sel,]
+          coord_centre <- c(mean(coords_sel[,1]),mean(coords_sel[,2]))
+          line[nrow(line)+1,] <- coord_centre
+          coords_todo <- coords_todo[!bool_sel,]
+          new_line <- FALSE
+          
+        } else {
+          if (nrow(line)>1){lines[[length(lines)+1]] <- line}
+          coords_todo <- coords_todo[-1,]
+          new_line <- TRUE
         }
+      }
+
+      # Create list of lines
+      if (length(lines)>0){
+        list_lines <- list()
+        for (i in 1:length(lines)){
+          l_coords <- lines[[i]]
+          lin <- Line(l_coords)
+          lin_id <- Lines(list(lin),ID=i)
+          list_lines[[i]] <- lin_id
+        }
+        
+        # Save lines
+        sl <- SpatialLines(list_lines)
+        sldf <- SpatialLinesDataFrame(sl, data.frame(id=1:length(lines)))
+        writeOGR(sldf, dsn=path_folder, layer=paste0("lines_",w), driver = "ESRI Shapefile", overwrite_layer = T)
       }
       print(paste0(w, " segmentation vectorized."))
       })
@@ -138,4 +126,3 @@ combine_lines <- function(path_target, name_line_output){
   remove(lines_comb)
   print("Lines combined.")
 }
-
