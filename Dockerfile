@@ -7,4 +7,4 @@ RUN apt update && apt-get install -y r-base libgdal-dev libproj-dev libgeos++-de
 RUN Rscript /road_finder/src/requirements.R
 
 WORKDIR /road_finder/
-CMD /bin/bash
+CMD Rscript /road_finder/src/main.R
