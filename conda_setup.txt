@@ -1,0 +1,4 @@
+cd root_folder
+conda create -y -n road_finder python==3.8
+conda activate road_finder
+pip install -r .\src\requirements.txt
