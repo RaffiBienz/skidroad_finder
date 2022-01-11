@@ -3,7 +3,7 @@
 # R.Bienz 06.01.2022
 #-----------------------------------------------------------------------------#
 # Set Working directory
-wd <- "../"
+wd <- "."
 setwd(wd)
 print(paste("Current working directory:",getwd()))
 

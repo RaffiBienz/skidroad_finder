@@ -5,8 +5,8 @@
 
 # General setup
 number_of_cores <- 7 # Number of cores used for certain calculations
-remove_tempfiles <- FALSE # Should temporary files be removed?
-remove_interim_results <- TRUE # Should results for each area be removed? 
+remove_tempfiles <- TRUE # Should temporary files be removed?
+remove_interim_results <- FALSE # Should results for each area be removed? If set to TRUE, temporary files are also removed.
 
 # Path to the ground structure dataset
 # See https://github.com/RaffiBienz/dtmanalyzer for calculation

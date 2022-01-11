@@ -9,7 +9,7 @@ Two datasets are required for the algorithm to work:
 - Forest delineation of the area of interest (polygons as shapefile).
 
 ## Algorithm
-A combination of R and Python are used. R is used for geoprocessing tasks during pre- and post-processing. Python is used for the semantic segmentation of the ground structure data. For the semantic segmentation a U-Net architecture is used. For the vectorization of the segmentation masks a region growing algorithm was developed.
+A combination of R and Python are used. R is used for geoprocessing tasks during pre- and post-processing and for vectorizing the segmentation masks. Python is used for the semantic segmentation of the ground structure data. For this a U-Net architecture is used. For the vectorization of the segmentation masks a region growing algorithm was developed.
 
 
 ## Usage
@@ -33,27 +33,28 @@ pip install -r .\src\requirements.txt
 ```
 
 ### Setup R
-- Install R and if desired RStudio (https://www.r-project.org/).
+- Install R (https://www.r-project.org/).
 - Required packages: rgdal, rgeos, raster, imager, doParallel, foreach, sp (see requirements.R). These packages are automatically installed when, main.R is run.
 - Open config.R and set configurations. Especially, add the path to the python or the conda environment in config.R (Typically: C:/Users/USERNAME/.conda/envs/skidroad_finder/python.exe). If python is defined as a environment variable just type "python" in config.R.
 
 ### Execute script
-Execute main.R in the src folder. 
+Execute main.R from the root folder. 
 
 ```
-Rscript main.R
+Rscript src/main.R
 ```
 
 Interim results per forest delineation element are saved in the wd folder. The final products over the whole area of interest are saved in the results folder. The final segmentation mask is saved as raster dataset (tif). The vectorized segmentation mask is saved as a shapefile (shp).
 
 ### Docker
-Alternatively to the above setup, you can also use the Dockerfile provided. Open a command prompt, cd into the root folder and execute:
+Alternatively to the above setup, you can also use the Dockerfile provided. Set the python path in Config.R to "python" (default value), open a command prompt, cd into the root folder and execute:
 
 ```
 docker build -t skidroad_finder .
-docker run skidroad_finder
+docker run -v ${PWD}/wd:/road_finder/wd -v ${PWD}/results:/road_finder/results skidroad_finder
 ```
 
+This starts a docker container which automaticallly executes the calculations.
 
 
 
