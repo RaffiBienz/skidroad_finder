@@ -4,17 +4,17 @@ Created by Raffael Bienz. As a final project for a DAS in Data Science at FHNW. 
 The example data was kindly provided by the Kanton of Aargau.
 
 ## Aim
-In this repository a algorithm is provided to automatically detect skid roads/trails in lidar data. The Algorithm was specifically trained for skid roads/trails (Feinerschliessung), forest roads (Waldstrassen) are not detected by this method.
+In this repository an algorithm is provided to automatically detect skid roads/trails in lidar data. The algorithm was specifically trained for skid roads/trails (Feinerschliessung), whereas forest roads (Waldstrassen) are not detected by this method.
 
 ## Data required
 Two datasets are required for the algorithm to work:
-- Ground structure dataset of the area of interest (tif, with a 0.5 m resolution). Calculated based on Lidar data. For the Method see: https://github.com/RaffiBienz/dtmanalyzer
+- Ground structure dataset of the area of interest (tif, with a 0.5 m resolution). Calculated based on Lidar data. For the method see: https://github.com/RaffiBienz/dtmanalyzer
 - Forest delineation of the area of interest (polygons as shapefile).
 
 Example datasets are provided in this repository.
 
 ## Algorithm
-A combination of R and Python are used. R is used for geoprocessing tasks during pre- and post-processing and for vectorizing the segmentation masks. Python is used for the semantic segmentation of the ground structure data. The segmentation model is based on a U-Net architecture and was trained with 800 75x75 m windows of the ground structure dataset and the associated ground truth masks. For the vectorization of the segmentation masks a region growing algorithm was developed.
+A combination of R and Python are used. R is used for geoprocessing tasks during pre- and postprocessing and for vectorizing the segmentation masks. Python is used for the semantic segmentation of the ground structure data. The segmentation model is based on a U-Net architecture and was trained with 800 75x75 m windows of the ground structure dataset and the associated ground truth masks. For the vectorization of the segmentation masks a region growing algorithm was developed.
 
 The segmentation model achieved a F1-Score of 0.6 on the validation dataset (Recall: 0.64, Precision: 0.57).
 
@@ -40,7 +40,7 @@ pip install -r ./src/requirements.txt
 
 ### Setup R
 - Install R (https://www.r-project.org/) and add the path to Rscript to your PATH environment variable.
-- Required packages: rgdal, rgeos, raster, imager, doParallel, foreach, sp (see requirements.R). These packages are automatically installed when, main.R is run.
+- Required packages: rgdal, rgeos, raster, imager, doParallel, foreach, sp (see requirements.R). These packages are automatically installed when main.R is run.
 - If desired, open config.R and set configurations. If the main.R Script is run from RStudio, add the path to the python or the conda environment in config.R (Typically: C:/Users/USERNAME/.conda/envs/skidroad_finder/python.exe). If the main.R Script is run from the conda command prompt (this is the recommended method), just leave the default value "python".
 
 ### Execute script
@@ -60,7 +60,7 @@ docker build -t skidroad_finder .
 docker run -v ${PWD}/wd:/skidroad_finder/wd -v ${PWD}/results:/road_finder/results skidroad_finder
 ```
 
-This starts a docker container which automatically executes the calculations and shuts down the container, when it is finished. You can then find the model outputs in the results folder.
+This starts a docker container which automatically executes the calculations and shuts down the container when it is finished. You then can find the model outputs in the results folder.
 
 Final Result:
 
