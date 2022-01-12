@@ -122,6 +122,15 @@ combine_lines <- function(path_target, name_line_output){
       } else {lines_comb <- temp}
     }
   }
+  
+  # Remove small segments
+  drop_list <- c()
+  for (i in 1:nrow(lines_comb)){
+    n <- nrow(lines_comb@lines[[i]]@Lines[[1]]@coords)
+    if (n<3){drop_list <- c(drop_list,i)}
+  }
+  lines_comb <- lines_comb[-drop_list,]
+  
   writeOGR(lines_comb, dsn="results", layer=name_line_output, driver = "ESRI Shapefile", overwrite_layer = T)
   remove(lines_comb)
   print("Lines combined.")

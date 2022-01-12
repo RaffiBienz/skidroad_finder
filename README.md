@@ -39,7 +39,7 @@ pip install -r ./src/requirements.txt
 ```
 
 ### Setup R
-- Install R (https://www.r-project.org/).
+- Install R (https://www.r-project.org/) and add the path to Rscript to your PATH environment variable.
 - Required packages: rgdal, rgeos, raster, imager, doParallel, foreach, sp (see requirements.R). These packages are automatically installed when, main.R is run.
 - Open config.R and set configurations. Especially, add the path to the python or the conda environment in config.R (Typically: C:/Users/USERNAME/.conda/envs/skidroad_finder/python.exe). If python is defined as a environment variable just type "python" in config.R.
 
@@ -50,7 +50,7 @@ Execute main.R from the root folder.
 Rscript ./src/main.R
 ```
 
-Interim results per forest delineation element are saved in the wd folder. The final products over the whole area of interest are saved in the results folder. The final segmentation mask is saved as raster dataset (tif). The vectorized segmentation mask is saved as a shapefile (shp).
+Interim results per forest delineation element are saved in the wd folder. The final products over the whole area of interest are saved in the results folder. The final segmentation mask is saved as raster dataset (tif). The vectorized segmentation mask is saved as a shapefile (shp). Use a GIS to visualize the results.
 
 ### Docker
 Alternatively to the above setup, you can also use the Dockerfile provided. Set the python path in Config.R to "python" (default value), open a command prompt, cd into the root folder and execute:
@@ -63,4 +63,5 @@ docker run -v ${PWD}/wd:/road_finder/wd -v ${PWD}/results:/road_finder/results s
 This starts a docker container which automatically executes the calculations and shuts down the container, when it is finished. You can then find the model outputs in the results folder.
 
 Final Result:
+
 ![](example.jpg)
