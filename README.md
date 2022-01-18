@@ -25,7 +25,7 @@ The segmentation model achieved a F1-Score of 0.6 on the validation dataset (Rec
 git clone https://github.com/RaffiBienz/skidroad_finder.git
 ```
 
-Download the pretrained model from the following link and put in the model folder: https://drive.google.com/file/d/1-19k1sK8yHX16nlxd5rZcjLhEjcobTg0
+Download the pretrained model from the following link and put in a folder named "model": https://drive.google.com/file/d/1-19k1sK8yHX16nlxd5rZcjLhEjcobTg0
 
 ### Setup Python (with Anaconda)
 
