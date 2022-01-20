@@ -57,7 +57,7 @@ Alternatively to the above setup, you can also use the Dockerfile provided. Open
 
 ```
 docker build -t skidroad_finder .
-docker run -v ${PWD}/wd:/skidroad_finder/wd -v ${PWD}/results:/road_finder/results skidroad_finder
+docker run -v ${PWD}/wd:/skidroad_finder/wd -v ${PWD}/results:/skidroad_finder/results skidroad_finder
 ```
 
 This starts a docker container which automatically executes the calculations and shuts down the container when it is finished. You then can find the model outputs in the results folder.
