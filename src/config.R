@@ -26,7 +26,7 @@ path_model <- file.path("model/road_finder_model.h5")
 
 # Global variables
 window_size <- 150 # size for segmentation windows (model was trained for 150x150 m windows)
-threshold_segmentation <- 0.3 # all pixels in the segmentation output above this value will be classified as strip roads
+threshold_segmentation <- 0.5 # all pixels in the segmentation output above this value will be classified as strip roads
 name_raster_output <- "forest_roads"
 
 # Vectorizer setup
