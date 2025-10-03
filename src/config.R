@@ -2,9 +2,10 @@
 #### Configuration file ####
 # Set your parameters and paths in this file
 #-----------------------------------------------------------------------------#
+# Force R not to use exponential notation
+options("scipen"=100, "digits"=4)
 
 # General setup
-number_of_cores <- 7 # Number of cores used for certain calculations
 remove_tempfiles <- TRUE # Should temporary files be removed?
 remove_interim_results <- FALSE # Should results for each area be removed? If set to TRUE, temporary files are also removed.
 
@@ -13,11 +14,9 @@ remove_interim_results <- FALSE # Should results for each area be removed? If se
 path_ground <- file.path("data/example_ground_structure.tif")
 
 # Path to the forest delineation (or delineation of areas of interest)
-path_delineation <- file.path("data")
-name_delineation <- "example_forest_delineation"
+path_delineation <- file.path("data/example_forest_delineation.shp")
 
 # Python setup
-#path_python <- file.path("C:/Users/Raffi/.conda/envs/road_finder2/python.exe") 
 path_python = "python" # Path to python environment
 path_script <- file.path("/src/predict_segmentation.py")
 
@@ -31,7 +30,7 @@ name_raster_output <- "forest_roads"
 
 # Vectorizer setup
 vectorize_segmentation <- TRUE
-clip_lines <- TRUE # clip lines to forest delineation?
+clip_lines <- TRUE # clip lines to forest delineation
 name_line_output <- "forest_roads"
 thresh_min_area <- 20 # minimum area in m2
 thresh_thinning <- 7 # minimum number of positive neighbors

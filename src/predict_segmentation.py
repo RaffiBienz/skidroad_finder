@@ -7,9 +7,6 @@ import os
 import sys
 
 # Arguments
-# w=1
-# path_model = "D:\Projekte\\road_finder\model\\road_finder_model.h5"
-# path_data = "D:\Projekte\\road_finder\wd\prediction\\1"
 w = sys.argv[1]
 path_model = sys.argv[2]
 path_data = sys.argv[3]
@@ -43,10 +40,8 @@ if __name__== '__main__':
             patches_img = tf.reshape(patches_img, [n_splits**2, img_size[0],img_size[1],1])
             pred = model.predict(patches_img)
 
-            #np.unique(np.round(pred[2,:,:,0],2), return_counts=True)
-
             for i in range(n_splits*n_splits):
-                img = keras.preprocessing.image.array_to_img(np.expand_dims(pred[i,:,:,1],-1))
+                img = keras.preprocessing.image.array_to_img(np.expand_dims(pred[i,:,:,1],-1)*255,scale=False)
                 img = img.resize((150,150))
                 img.save(os.path.join(path_masks, file.split(".")[0]+"_"+ str(i)+ ".jpg"))
 
